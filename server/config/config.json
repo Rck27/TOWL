@@ -1,0 +1,19 @@
+
+{
+  "development": {
+    "username": "towl",
+    "password": "proteinhewanikayaserat",
+    "database": "towldb",
+    "host": "127.0.0.1",
+    "port": 5432,
+    "dialect": "postgres"
+  },
+  "test": {
+    "username": "towl",
+    "password": "proteinhewanikayaserat",
+    "database": "towldb",
+    "host": "127.0.0.1",
+    "port": 5432,
+    "dialect": "postgres"
+  }
+}
