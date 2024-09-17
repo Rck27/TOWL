@@ -44,7 +44,7 @@ function initial() {
 }
 
 require("./server/routes/auth.routes")(app);
-// require("./server/routes/user.routes")(app);
+require("./server/routes/user.routes")(app);
 
 
 // Setup a default catch-all route that sends back a welcome message in JSON format.
