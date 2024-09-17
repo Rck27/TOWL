@@ -24,6 +24,11 @@ module.exports = function(app) {
       [authJwt.verifyToken, authJwt.isTutor],
       controller.tutorAccess
     );
+    app.get(
+      "/api/filter",
+      [authJwt.verifyToken, authJwt.isStudent],
+      controller.search
+    );
 
   };
   
