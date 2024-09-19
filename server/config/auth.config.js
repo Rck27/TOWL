@@ -1,3 +1,7 @@
 module.exports = {
-    secret  : "kodingdangding"
+    secret  : "kodingdangding",
+    auth: {
+        user: "test@gmail.com",
+        pass: "password"
+    }
 }

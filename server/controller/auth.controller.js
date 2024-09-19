@@ -2,12 +2,72 @@ const db = require("../models")
 const config = require("../config/auth.config")
 const User = db.user;
 const TutorProfile =  db.tutorProfile;
+const crypto =  require("crypto");
+const nodemailer = require("nodemailer");
+const bcrypt = require("bcryptjs");
+const mailAuth = require("../config/auth.config")
+var  jwt = require("jsonwebtoken");
+const { UniqueConstraintError } = require("sequelize");
 
 const  Op =  db.sequelize.Op;
 
-var  jwt = require("jsonwebtoken");
-var bcrypt = require("bcryptjs");
-const { UniqueConstraintError } = require("sequelize");
+
+const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: mailAuth.auth
+})
+
+exports.requestPasswordReset= (req, res, next) => {
+const inputEmail = req.body.email;
+console.log("email reset iputted is ", inputEmail);
+    User.findOne({where: {email: inputEmail}})
+    .then(user => {
+        if(!user){
+            return res.status(404).send({message: "user not found"});
+        }
+        resetToken = crypto.randomBytes(32).toString('hex');
+        const resetTokenHash = crypto.createHash('sha256').update(resetToken).digest('hex');
+        const resetTokenExpiry = Date.now() + 3600000; // 1 hour from now
+        console.log("input email is ", inputEmail, user.email);
+        console.log("Reset token is ", resetToken);
+        console.log("expired at ", resetTokenExpiry);
+        // Save token hash and expiry in the user's record
+        return user.update({
+            reset_password_token: resetTokenHash,
+            reset_password_expires: resetTokenExpiry
+        })
+    })
+    //not yet tested  with real account
+    .then(user => {
+        // Send email with reset token
+        const resetUrl = `http://localhost:3000/api/auth/resetPassword/${resetToken}`;
+        const mailOptions = {
+            to: user.email,
+            from: 'your-email@gmail.com',
+            subject: 'Password Reset Request',
+            text: `You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n
+            Please click on the following link, or paste this into your browser to complete the process:\n\n
+            ${resetUrl}\n\n
+            If you did not request this, please ignore this email and your password will remain unchanged.\n`
+        };
+        console.log(JSON.stringify(mailOptions));
+        res.status(200).send({message: "successful"});
+        // transporter.sendMail(mailOptions, (err) => {
+        //     if (err) {
+        //         console.error("Error sending email:", err);
+        //         return res.status(500).send({ message: "Error sending email" });
+        //     }
+        //     res.status(200).send({ message: "Password reset email sent successfully!" });
+        // });
+    })
+    .catch(err => {
+        console.error("error requesting password reset: ", err);
+        res.status(401).send({message: "error requesting password reset"})
+    });
+
+    
+};
+
 
 exports.signUp = (req, res) => {
     console.log("Attempting to create user:", req.body.username);
