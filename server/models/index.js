@@ -19,6 +19,13 @@ const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
+// Load models
 db.user = require("./user.js")(sequelize, Sequelize);
+db.profile = require("./tutorProfile")(sequelize, Sequelize);
+
+// Define associations here if needed
+// For example:
+// db.user.hasOne(db.profile);
+// db.profile.belongsTo(db.user);
 
 module.exports = db;

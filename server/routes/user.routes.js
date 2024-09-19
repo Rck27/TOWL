@@ -1,5 +1,5 @@
 const {authJwt} = require("../middleware");
-const controller = require("../controller/user.controller")
+const controller = require("../controller/user.controller");
 
 
 module.exports = function(app) {
@@ -24,10 +24,17 @@ module.exports = function(app) {
       [authJwt.verifyToken, authJwt.isTutor],
       controller.tutorAccess
     );
-    app.get(
-      "/api/filter",
-      [authJwt.verifyToken, authJwt.isStudent],
-      controller.search
+
+    // app.get(
+    //   "/api/filter",
+    //   [authJwt.verifyToken, authJwt.isStudent],
+    //   controller.search
+    // );
+
+    app.post(
+      "/api/update/user",
+      [authJwt.verifyToken],
+      controller.updateUserProfile
     );
 
   };
