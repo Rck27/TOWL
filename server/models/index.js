@@ -21,8 +21,13 @@ db.sequelize = sequelize;
 
 // Load models
 db.user = require("./user.js")(sequelize, Sequelize);
-db.profile = require("./tutorProfile")(sequelize, Sequelize);
-
+db.tutorProfile = require("./tutorProfile.js")(sequelize, Sequelize);
+// Object.values(db).forEach((model) => {
+//   if (model.associate) {
+//     // model.associate(db);
+//     console.log("imported models is", db)
+//   }
+// });
 // Define associations here if needed
 // For example:
 // db.user.hasOne(db.profile);

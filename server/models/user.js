@@ -2,7 +2,17 @@
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-  const User = sequelize.define("users", {
+  class User extends Model {
+    static associate(models) {
+      // define association here
+      User.hasOne(models.TutorProfile, {
+        foreignKey: 'user_id',
+        sourceKey: 'user_id'
+      });
+    }
+  }
+
+  User.init({
     user_id: {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
@@ -31,6 +41,8 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: DataTypes.NOW,
     }
   }, {
+    sequelize,
+    modelName: 'User',
     tableName: 'users',
     timestamps: false,
     underscored: true

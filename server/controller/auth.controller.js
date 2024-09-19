@@ -1,6 +1,7 @@
 const db = require("../models")
 const config = require("../config/auth.config")
 const User = db.user;
+const TutorProfile =  db.tutorProfile;
 
 const  Op =  db.sequelize.Op;
 
@@ -16,9 +17,29 @@ exports.signUp = (req, res) => {
         user_type: req.body.user_type,
         password_hash: bcrypt.hashSync(req.body.password, 8)
     })
+    
     .then(user => {
-        console.log("User created successfully:", user.toJSON());
-        res.status(201).send({ message: "User registered successfully!", userId: user.user_id });
+        console.log("USER ID IS", user.user_id);
+        // Create a tutor profile for this user
+        return TutorProfile.create({
+            user_id: user.user_id,
+            nama: req.body.nama || 'Default Name',
+            gender: req.body.gender || 'male',
+            age: req.body.age || 25,
+            contact_number: req.body.contact_number || '1234567890',
+            grade: req.body.grade || ['7'],  // Provide a default value
+            availability: req.body.availability || ['Monday', 'Wednesday', 'Friday'],  // Provide a default value
+            price_preference: req.body.price_preference || [50, 100]
+        });
+    })
+      .catch(err  => {
+        console.log("ERROR IIS", err);
+        console.log("tutor profile not successful");
+        
+      })
+    .then(user => {
+        console.log("User created successfully:", req.email);
+        res.status(201).send({ message: "User registered successfully" });
     })
     .catch(err => {
         console.error("Error creating user:", err);
