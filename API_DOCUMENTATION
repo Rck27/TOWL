@@ -80,3 +80,9 @@ return:
 {
 	"message": "Welcome Student"
 }
+
+
+/api/auth/reqPasswordReset GET 
+return "token"
+
+/api/auth/resetPassword/:token
