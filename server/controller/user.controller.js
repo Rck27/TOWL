@@ -9,9 +9,11 @@ exports.tutorAccess = (req, res) => {
 exports.studentAccess =  (req, res) => {
     res.status(200).send("akses murid");
 };
+
 exports.searchTutor = async (req, res, next) => {
     try {
-      const {
+
+      let {
         availability,
         grade,
         gender,
@@ -19,68 +21,35 @@ exports.searchTutor = async (req, res, next) => {
         maxAge,
         minPrice,
         maxPrice,
-        sortBy,
         sortOrder
       } = req.body;
+      // let availability, grade;
+      // // let whereClause = {};
+      // // let order = [];
   
-      let whereClause = {};
-      let order = [];
-  
-      // Filter by availability
+      // // Filter by availability
       if (availability) {
         const availabilityArray = Array.isArray(availability) 
           ? availability 
           : availability.split(',').map(day => day.trim());
         
-        whereClause.availability = {
-          [Op.overlap]: availabilityArray
-        };
+        availability = availabilityArray;
+        console.log(availability);
+
       }
   
-      // Filter by grade
-      if (grade) {
-        const gradeArray = Array.isArray(grade) 
-          ? grade 
-          : grade.split(',').map(g => g.trim());
-        
-        whereClause.grade = {
-          [Op.overlap]: gradeArray
-        };
-      }
-  
-      // Filter by gender
-      if (gender) {
-        whereClause.gender = gender;
-      }
-  
-      // Filter by age range
-      if (minAge || maxAge) {
-        whereClause.age = {};
-        if (minAge) whereClause.age[Op.gte] = parseInt(minAge, 10);
-        if (maxAge) whereClause.age[Op.lte] = parseInt(maxAge, 10);
-      }
-  
-      // Filter by price range
-      if (minPrice || maxPrice) {
-        whereClause.price_preference = {};
-        if (minPrice) whereClause.price_preference[Op.gte] = parseInt(minPrice, 10);
-        if (maxPrice) whereClause.price_preference[Op.lte] = parseInt(maxPrice, 10);
-      }
-  
-      // Sorting
-      if (sortBy) {
-        order.push([sortBy, sortOrder || 'ASC']);
-      }
-  
+
+      const orderSort = sortOrder > 0 ? 'DESC' : 'ASC'; 
+    //  if(!Array.isArray(availability))  console.log("IT SOSDOAHBSDIKJBSDKJHASVBD");   
       const tutors = await TutorProfile.findAll({
-        where: whereClause,
-        order,
-        include: [{
-          model: User,
-          attributes: ['user_id', 'email']
-        }]
+        where: {
+          availability: availability,
+          grade: grade
+        },
       });
-  
+
+
+      // console.log(tutors);
       res.json(tutors);
     } catch (error) {
       console.error('Error searching tutors:', error);
